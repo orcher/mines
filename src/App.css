@@ -3,6 +3,11 @@
     height: 20px;
     border-style: solid;
     border-width: 1px;
+    text-align: center;
+}
+
+#mine {
+    background-color: red;
 }
 
 .create-btn {
@@ -12,4 +17,13 @@
 
 .square:hover {
     border-color: red;
+}
+
+.main-container {
+    text-align: center;
+    width: 100%;
+}
+
+.sub-container {
+    display: inline-block;
 }
