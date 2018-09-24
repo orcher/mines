@@ -19,35 +19,38 @@ class App extends Component {
             board: [],
             board_uncovered: [],
             win: null,
-            blownMineId: ""
+            minSize: 8,
+            maxSize: 30,
+            minMines: 1,
+            maxMinesRatio: 0.3
         }
     }
 
-    uncover(w, h, tmpBoardUncovered, count) {
-        const size = this.state.size;
-        if (count > 3) return;
-
-        if (this.state.board[w][h] === 0) {
-            if (w > 0)                       this.uncover(w - 1, h, tmpBoardUncovered, count+1);
-            if (w > 0 & h > 0)               this.uncover(w - 1, h - 1, tmpBoardUncovered, count + 1);
-            if (h > 0)                       this.uncover(w, h - 1, tmpBoardUncovered, count + 1);
-            if (w + 1 < size & h > 0)        this.uncover(w + 1, h - 1, tmpBoardUncovered, count + 1);
-            if (w + 1 < size)                this.uncover(w + 1, h, tmpBoardUncovered, count + 1);
-            if (w + 1 < size & h + 1 < size) this.uncover(w + 1, h + 1, tmpBoardUncovered, count + 1);
-            if (h + 1 < size)                this.uncover(w, h + 1, tmpBoardUncovered, count + 1);
-            if (w > 0 & h + 1 < size)        this.uncover(w - 1, h + 1, tmpBoardUncovered, count + 1);
-        }
-
+    uncover(w, h, tmpBoardUncovered) {
+        if (tmpBoardUncovered[w][h] !== null) return;
         tmpBoardUncovered[w][h] = 1;
+        const size = this.state.size;
+        if (this.state.board[w][h] === 0) {
+            if (w > 0)                       this.uncover(w - 1, h, tmpBoardUncovered);
+            if (w > 0 & h > 0)               this.uncover(w - 1, h - 1, tmpBoardUncovered);
+            if (h > 0)                       this.uncover(w, h - 1, tmpBoardUncovered);
+            if (w + 1 < size & h > 0)        this.uncover(w + 1, h - 1, tmpBoardUncovered);
+            if (w + 1 < size)                this.uncover(w + 1, h, tmpBoardUncovered);
+            if (w + 1 < size & h + 1 < size) this.uncover(w + 1, h + 1, tmpBoardUncovered);
+            if (h + 1 < size)                this.uncover(w, h + 1, tmpBoardUncovered);
+            if (w > 0 & h + 1 < size)        this.uncover(w - 1, h + 1, tmpBoardUncovered);
+        }
     }
 
     gameOver(w, h) {
-        const id = "s" + w + h;
-        document.getElementById(id).setAttribute("id", "mine");
+        this.showAllMines();
+
         this.setState({
             win: false,
-            blownMineId: id
         });
+
+        const id = "s" + w + h;
+        this.explosion(id, 1, 80, 20);
     }
 
     checkWin() {
@@ -61,8 +64,11 @@ class App extends Component {
             }
         }
 
+        const tmpWin = uncovered === this.state.nMines ? true : null;
+        if (tmpWin) this.showAllMines();
+
         this.setState ({
-            win: uncovered === this.state.nMines ? true : null
+            win: tmpWin
         });
     }
 
@@ -83,6 +89,49 @@ class App extends Component {
         });
 
         this.checkWin();
+    }
+
+    explosion(id, time, msize, esize) {
+        let elem = document.getElementById(id);
+        let size = 0;
+        let big = false;
+        let end = false;
+        let int = setInterval(frame, time);
+        function frame() {
+            if (end) {
+                clearInterval(int);
+            } else {
+                size += (big ? -1 : 1);
+                elem.style.width = size + 'px';
+                elem.style.height = size + 'px';
+                if (size === msize) big = true;
+                if (big & size === esize) end = true;
+            }
+        }
+    }
+
+    showAllMines() {
+        const size = this.state.size;
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (this.state.board[j][i] === 9) {
+                    const id = "s" + j + i;
+                    document.getElementById(id).setAttribute("class", "mine");
+                }
+            }
+        }
+    }
+
+    hideAllMines() {
+        const size = this.state.size;
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (this.state.board[j][i] === 9) {
+                    const id = "s" + j + i;
+                    document.getElementById(id).setAttribute("class", "square");
+                }
+            }
+        }
     }
 
     renderBoard() {
@@ -117,7 +166,7 @@ class App extends Component {
 
     renderInputForm() {
         return (
-            <div className="sub-container">
+            <div className="sub-container-form">
                 <table>
                     <tbody>
                         <tr>
@@ -139,13 +188,29 @@ class App extends Component {
     }
 
     createBoard() {
-        let m = document.getElementById("mine");
-        if (m !== null) {
-            m.setAttribute("id", this.state.blownMineId);
+        let size = parseInt(document.getElementById("input-size").value, 10);
+        let nMines = parseInt(document.getElementById("input-mines").value, 10);
+
+        if (size > this.state.maxSize) {
+            document.getElementById("input-size").value = this.state.maxSize;
+            size = this.state.maxSize;
+        }
+        else if (size < this.state.minSize) {
+            document.getElementById("input-size").value = this.state.minSize;
+            size = this.state.minSize;
         }
 
-        const size = parseInt(document.getElementById("input-size").value, 10);
-        const nMines = parseInt(document.getElementById("input-mines").value, 10);
+        const area = Math.pow(size, 2);
+        if (nMines / area > this.state.maxMinesRatio) {
+            document.getElementById("input-mines").value = Math.floor(area * this.state.maxMinesRatio);
+            nMines = Math.floor(area * this.state.maxMinesRatio);
+        }
+        else if (nMines < this.state.minMines) {
+            document.getElementById("input-mines").value = this.state.minMines;
+            nMines = this.state.minMines;
+        }
+
+        this.hideAllMines();
 
         const tmpBoard = [];
         let tmpBoardUncovered = [];
@@ -188,15 +253,14 @@ class App extends Component {
             nMines: nMines,
             board: tmpBoard,
             board_uncovered: tmpBoardUncovered,
-            win: null,
-            blownMineId: null
+            win: null
         });
     }
 
     renderInfo() {
         const info = this.state.win === null ? "" : this.state.win === true ? "You are winner!" : "You lost!";
         return (
-            <div className="sub-container">
+            <div className="sub-container-info">
                 {info}
             </div>
         );

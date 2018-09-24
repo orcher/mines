@@ -4,10 +4,17 @@
     border-style: solid;
     border-width: 1px;
     text-align: center;
+    font-size: 15px;
+    font-weight: bold;
 }
 
-#mine {
+.mine {
     background-color: red;
+    width: 20px;
+    height: 20px;
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
 }
 
 .create-btn {
@@ -26,4 +33,16 @@
 
 .sub-container {
     display: inline-block;
+}
+
+.sub-container-form {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.sub-container-info {
+    display: inline-block;
+    font-size: 30px;
+    font-weight: bold;
 }
