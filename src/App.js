@@ -177,6 +177,7 @@ class App extends Component {
                                 <td><Txt bold align="right">Mines:</Txt></td>
                                 <td><Input number width="30px" id="input-mines" type="text" defaultValue="10" /></td>
                                 <td><Button primary onClick={() => { this.createBoard() }}>Create</Button></td>
+                                <td>{this.renderInfo()}</td>
                             </tr>
                         </tbody>
                      </table>
@@ -277,11 +278,6 @@ class App extends Component {
                         <tr>
                             <td>
                                 {this.renderBoard()}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {this.renderInfo()}
                             </td>
                         </tr>
                     </tbody>
