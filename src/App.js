@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './App.css';
+import { Button, Input, Txt, Provider } from 'rendition';
 
 class Square extends React.Component {
     render() {
@@ -166,24 +167,21 @@ class App extends Component {
 
     renderInputForm() {
         return (
-            <div className="sub-container-form">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Size:</td>
-                            <td><input id="input-size" type="text" defaultValue="10" /></td>
-                        </tr>
-                        <tr>
-                            <td>Num. Mines: </td>
-                            <td><input id="input-mines" type="text" defaultValue="10" /></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td><button className="create-btn" onClick={() => { this.createBoard() }}>Create</button></td>
-                        </tr>
-                    </tbody>
-                 </table>
-            </div>
+            <Provider>
+                <div className="sub-container-form">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><Txt bold align="right">Size:</Txt></td>
+                                <td><Input number width="30px" id="input-size" type="text" defaultValue="10" /></td>
+                                <td><Txt bold align="right">Mines:</Txt></td>
+                                <td><Input number width="30px" id="input-mines" type="text" defaultValue="10" /></td>
+                                <td><Button primary onClick={() => { this.createBoard() }}>Create</Button></td>
+                            </tr>
+                        </tbody>
+                     </table>
+                </div>
+            </Provider>
         );
     }
 
