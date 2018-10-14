@@ -74,7 +74,7 @@ class App extends Component {
     }
 
     handleSquareClick(w, h) {
-        if (this.state.win != null) return;
+        if (this.state.win !== null) return;
 
         if (this.state.board[w][h] === 9) {
             this.gameOver(w, h);
@@ -222,7 +222,7 @@ class App extends Component {
         for (let i = 0; i < nMines; i++) {
             let c = Math.floor(Math.random() * size);
             let r = Math.floor(Math.random() * size);
-            while (tmpBoard[c][r] != null) {
+            while (tmpBoard[c][r] !== null) {
                 c = Math.floor(Math.random() * size);
                 r = Math.floor(Math.random() * size);
             }
